@@ -15,9 +15,14 @@ function App() {
     console.log("current title", currentTitle);
   }, [currentTitle, message, prevchats]);
 
+  const restrictStringLength = (inputString, maxLength) => {
+    return inputString.length > maxLength
+      ? inputString.substring(0, maxLength)
+      : inputString;
+  };
   const getResponse = async () => {
     if (!currentTitle) {
-      setCurrentTitle(value);
+      setCurrentTitle(restrictStringLength(value, 20));
       console.log("if is worked", currentTitle);
     } else {
       setIsLoading(true);
@@ -70,12 +75,12 @@ function App() {
           ))}
         </ul>
         <nav>
-          {currentTitle ? <p>{currentTitle}</p> : <p>Made by Mariam</p>}
+          <p>Made by Mariam</p>
         </nav>
       </section>
 
       <section className="main">
-        <h1>MariamGpt</h1>
+        <h1> MariamGpt</h1>
         <ul className="feed">
           {currentChat?.map((prevChat, index) => (
             <li key={index}>
