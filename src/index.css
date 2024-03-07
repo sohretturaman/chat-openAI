@@ -106,3 +106,35 @@ input:focus{
   right: 0px;
   cursor: pointer;
 }
+
+.feed{
+  overflow: scroll; 
+  overflow-x: hidden;
+  width: 100%;
+  padding: 0;
+  height: 100%;/* 100% of viewport height */
+
+}
+
+.feed li{
+  display: flex;
+  background-color: #444654;
+  width: 100%;
+  padding:20px;
+  margin: 20px 0;
+}
+.feed p{
+  color:rgb(255,255,255,0.08) ;
+  font-size: 14px;
+  text-align: left;
+
+
+}
+
+.feed p.role{
+  min-width:100px ;
+  color: white;
+}
+.feed p.content{
+  color: rgb(255, 255, 255);
+}
