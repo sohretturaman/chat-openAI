@@ -1,64 +1,47 @@
 /** @format */
 
 import { useEffect, useState } from "react";
+import { getMessages } from "./services";
 
 function App() {
   const [message, setMessage] = useState("");
   const [value, setValue] = useState("");
   const [prevchats, setPrevChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState("");
-  const getMessages = async () => {
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message: value,
-      }),
-    };
 
-    try {
-      if (value.trim().length === 0) {
-        return;
-      } else {
-        console.log("!!!!sent request to api ");
-        const response = await fetch(
-          "http://localhost:8000/completions",
-          options
-        );
-        const data = await response.json();
-        console.log(data);
-        setMessage(data.choices[0].message);
-      }
-    } catch (error) {
-      console.log("an error occured on frontend", error);
-    }
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!currentTitle && message?.content) {
-      setCurrentTitle(value);
-    }
+    console.log("current title", currentTitle);
+  }, [currentTitle, message, prevchats]);
 
-    if (currentTitle && message) {
+  const getResponse = async () => {
+    if (!currentTitle) {
+      setCurrentTitle(value);
+      console.log("if is worked", currentTitle);
+    } else {
+      setIsLoading(true);
+      const MessageData = await getMessages(value);
+      console.log("current title", currentTitle);
       setPrevChats((prevChats) => [
         ...prevChats,
         {
           role: "user",
           content: value,
-          title: currentTitle,
+          title: currentTitle ? currentTitle : value,
         },
         {
-          role: message.role,
-          content: message.content,
-          title: currentTitle,
+          role: MessageData.role,
+          content: MessageData.content,
+          title: currentTitle ? currentTitle : value,
         },
       ]);
+      setIsLoading(false);
+      setValue("");
     }
-  }, [currentTitle, message]);
+  };
 
-  // console.log("prev chats array", prevchats);
+  console.log("prev chats array", prevchats);
 
   const chatTitles = [...new Set(prevchats.map((prevChat) => prevChat.title))];
 
@@ -86,7 +69,9 @@ function App() {
             </li>
           ))}
         </ul>
-        <nav>{!currentTitle && <p>Made by Mariam</p>}</nav>
+        <nav>
+          {currentTitle ? <p>{currentTitle}</p> : <p>Made by Mariam</p>}
+        </nav>
       </section>
 
       <section className="main">
@@ -103,8 +88,8 @@ function App() {
         <div className="bottomSection">
           <div className="inputContainer">
             <input value={value} onChange={(e) => setValue(e.target.value)} />
-            <div onClick={getMessages} id="submit">
-              Send
+            <div onClick={getResponse} id="submit">
+              {isLoading ? "loading.." : "send"}
             </div>
           </div>
           <p className="info">
